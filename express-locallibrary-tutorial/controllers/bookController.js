@@ -1,14 +1,36 @@
 var Book = require('../models/book');
+var Author = require('../models/author');
+var Genre = require('../models/genre');
+var BookInstance = require('../models/bookinstance');
+
+var async = require('async');
 
 exports.index = function(req, res) {
-    res.send('NOT IMPLEMENTED: Site Home Page');
+
+    async.parallel({
+        book_count: bookCounter,
+        book_instance_count: bookInstanceCounter,
+        book_instance_available_count: availableBookInstanceCounter,
+        author_count: authorCounter,
+        genre_count: genresCounter
+    },function(err, counts){
+        res.render('index', {title: 'Local Library Home', error: err, data: counts});
+    });
+
 };
 
 // Display list of all books
-exports.book_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: Book list');
-};
+exports.book_list = function(req, res, next) {
 
+    Book.find({}, 'title author')
+        .populate('author')
+        .exec(function (err, list_books) {
+            if (err) { return next(err); }
+            //Successful, so render
+            res.render('book_list', { title: 'Book List', book_list: list_books });
+        });
+
+};
 // Display detail page for a specific book
 exports.book_detail = function(req, res) {
     res.send('NOT IMPLEMENTED: Book detail: ' + req.params.id);
@@ -43,3 +65,31 @@ exports.book_update_get = function(req, res) {
 exports.book_update_post = function(req, res) {
     res.send('NOT IMPLEMENTED: Book update POST');
 };
+
+// services functions
+// count the books in the db
+// the callback function is passed by async.parallel is of type "function(err, result)"
+// and is called, with the right arguments, when mongoose complete the query to the db
+function bookCounter(callback){
+    Book.count(callback);
+}
+// count the authors in the db
+function authorCounter(callback){
+    Author.count(callback);
+}
+// count the genres in the db
+function genresCounter(callback){
+    Genre.count(callback);
+}
+//count the bookinstances in the db
+function bookInstanceCounter(callback){
+    BookInstance.count(callback);
+}
+//count the bookinstances available in the db
+function availableBookInstanceCounter(callback){
+    BookInstance.count(
+        {
+            status: 'Available'
+        },
+        callback);
+}

@@ -1,5 +1,6 @@
 //definition of BookInstance model
 var mongoose = require('mongoose');
+var moment = require('moment');
 
 var Schema = mongoose.Schema;
 
@@ -23,6 +24,13 @@ BookInstanceSchema
 .get(function(){
     return '/catalog/bookinstance' + this._id;
 });
+//formatted due back date
+BookInstanceSchema
+    .virtual('due_back_formatted')
+    .get(function () {
+        return moment(this.due_back).format('MMMM Do, YYYY');
+    });
+
 
 var BookModel = mongoose.model('BookInstance', BookInstanceSchema);
 

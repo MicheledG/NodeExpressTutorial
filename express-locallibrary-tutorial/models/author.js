@@ -1,5 +1,6 @@
 //definition of the Author model
 var mongoose = require('mongoose');
+var moment = require('moment');
 
 var Schema = mongoose.Schema;
 
@@ -24,6 +25,16 @@ AuthorSchema
     .virtual('url')
     .get(function(){
         return '/catalog/author' + this._id;
+    });
+//life span
+AuthorSchema
+    .virtual('life_span')
+    .get(function () {
+        var lifeSpan =
+            moment(this.date_of_birth).format('YYYY/MM/DD')
+            + ' - '
+            + moment(this.date_of_death).format('YYYY/MM/DD');
+        return lifeSpan;
     });
 
 var AuthorModel = mongoose.model('Author', AuthorSchema);

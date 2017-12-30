@@ -13,7 +13,7 @@ var GenreSchema = new Schema({
 GenreSchema
 .virtual('url')
 .get(function(){
-   return '/catalog/bookgenre/' + this._id;
+   return '/catalog/genre/' + this._id;
 });
 
 var GenreModel = mongoose.model('Genre', GenreSchema);
