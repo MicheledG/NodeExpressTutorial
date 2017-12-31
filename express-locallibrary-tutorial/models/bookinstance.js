@@ -22,7 +22,7 @@ var BookInstanceSchema = new Schema({
 BookInstanceSchema
 .virtual('url')
 .get(function(){
-    return '/catalog/bookinstance' + this._id;
+    return '/catalog/bookinstance/' + this._id;
 });
 //formatted due back date
 BookInstanceSchema
